@@ -16,6 +16,16 @@ def get_ip(request):
         ip = ""
     return ip
 
+import uuid
+
+def get_ref_id():
+    ref_id = str(uuid.uuid4())[:11].replace('-','').lower()
+    try:
+        id_exists = Join.objects.get(ref_id=ref_id)
+        get_ref_id()
+    except:
+        return ref_id
+
 def home(request):
     #print request.POST["email"]
     
@@ -35,6 +45,7 @@ def home(request):
         new_join = form.save(commit=False)
         #email = form.cleaned_data['email']
         #new_join, created = Join.objects.get_or_create(email=email) #only creates once, doesnt duplicate
+        new_join.ref_id = get_ref_id()
         new_join.ip_address = get_ip(request)
         new_join.save()
     context = {"form":form}
