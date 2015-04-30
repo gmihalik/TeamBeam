@@ -8,7 +8,7 @@ class Team(models.Model):
     updated = models.DateTimeField(auto_now_add = False, auto_now = True)
     
     def __unicode__(self):
-        return self.team_name
+        return self.team_id
         
     class Meta:
         unique_together = ("team_name", "team_id")
