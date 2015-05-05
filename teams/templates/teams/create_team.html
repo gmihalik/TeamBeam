@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+body {
+padding-top: 40px;
+padding-bottom: 40px;
+background-color: #eee;
+}
+
+.form-register {
+max-width: 430px;
+padding: 15px;
+margin: 0 auto;
+}
+.form-register .form-register-heading,
+.form-register .checkbox {
+margin-bottom: 10px;
+}
+.form-register .checkbox {
+font-weight: normal;
+}
+.form-register .form-control {
+position: relative;
+height: auto;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+padding: 10px;
+font-size: 16px;
+}
+.form-register .form-control:focus {
+z-index: 2;
+}
+.form-register input[type="email"] {
+margin-bottom: -1px;
+border-bottom-right-radius: 0;
+border-bottom-left-radius: 0;
+}
+.form-register input[type="password"] {
+margin-bottom: 10px;
+border-top-left-radius: 0;
+border-top-right-radius: 0;
+}
+#signup{
+float:right;
+}
+</style>
+        {% if team_created %}
+                <strong>Thank you for creating your team!</strong>
+                <a href="/login">Now let's set up a roster!</a><br />
+        {% else %}
+                <form class="form-register" id="team_form" method="post" action="/teams/create/"
+                enctype="multipart/form-data">
+                
+                {% csrf_token %}
+                <h3 class="form-signin-heading">Create a new team</h3>
+                <!-- Display each form. The as_p method wraps each element in a paragraph
+                (<p>) element. This ensures each element appears on a new line,
+                making everything look neater. 
+                {{ user_form.as_p }}-->
+
+                {% if error %}
+                        {{ error }}
+                {% endif %}
+                <label for="id_team" class="sr-only">Team Name</label>
+                <input type="text" id="id_team" class="form-control" placeholder="Team Name" name="team_name" value="" size="30" required autofocus>
+                <label for="id_league_name" class="sr-only">League Name</label>
+                <input type="text" id="id_league_name" class="form-control" placeholder="League Name" name="league_name" value="" size="75" required>
+                <label for="id_season" class="sr-only">Season</label>
+                <input type="text" id="id_season" class="form-control" placeholder="ex. 2015 Summer" name="season" value="" size="75"  required>
+                <label for="id_division" class="sr-only">Season</label>
+                <input type="text" id="id_division" class="form-control" placeholder="ex. Div C" name="division" value="" size="75"  required>
+                <!-- Provide a button to click to submit the form. -->
+                <button class="btn btn-lg btn-primary btn-block" type="submit" value="submit" name="submit">Register</button>
+                </form>
+        {% endif %}
+{% endblock %}

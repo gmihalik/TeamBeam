@@ -1,24 +1,38 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from .forms import TeamForm
+from django.shortcuts import render, render_to_response
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
-
 from .models import Player, Team
+from django.contrib.auth.models import User
+import uuid
 
 def index(request):
-    return HttpResponse("Hello world! teams index")
-    
+    if request.user.is_authenticated():
+        #Use the username to select all teams the user is on
+        #use the team ids to make a list of all teams for the user
+        player_username = User.objects.get(username=request.user.username)
+        team_list = Team.objects.all().filter(player__username=player_username)
+        template = loader.get_template('teams/dashboard.html')
+        context = RequestContext(request, {
+        'team_list': team_list,
+        })
+        return HttpResponse(template.render(context))
+    else:
+        return HttpResponseRedirect('/login')
 
 def detail(request, team_id):
-    team = Team.objects.get(id=team_id)
-    
-    return HttpResponse("youre looking at team %s" % team.team_name)
-
+    if request.user.is_authenticated():
+        if access_allowed(request, team_id):
+            for e in Team.objects.all():
+                print e.team_id
+            team = Team.objects.get(team_id=team_id)
+            return HttpResponse("youre looking at team %s" % team.team_name)
+        else:
+            return HttpResponseRedirect('/teams')    
+    else:
+        return HttpResponseRedirect('/login')
 def roster(request, team_id):
-
-    '''team_list = Player.objects.all().filter(team_id_id=team_id_id)
-    
-    #output = team_list
-    
+    '''
     output = ', '.join([p.player_name for p in team_list])
     team = Team.objects.get(id=team_id_id)
     output += '%s' % team.team_name'''
@@ -27,19 +41,75 @@ def roster(request, team_id):
     output = team_list
     return HttpResponse(output)
     '''
-    team_list = Player.objects.all().filter(team_id=team_id)
-    template = loader.get_template('teams/roster.html')
-    context = RequestContext(request, {
-        'team_list': team_list,
-    })
-    return HttpResponse(template.render(context))
-    
+    if request.user.is_authenticated():
+        if access_allowed(request, team_id):
+            player_team = Team.objects.get(team_id=team_id)
+            team_list = Player.objects.all().filter(team_id=player_team)
+            template = loader.get_template('teams/roster.html')
+            context = RequestContext(request, {
+                'team_list': team_list,
+            })
+            return HttpResponse(template.render(context))
+        else:
+            return HttpResponseRedirect('/teams')    
+    else:
+        return HttpResponseRedirect('/login')
 def player(request, team_id, player_id):
-    team = Team.objects.get(id=team_id)
-    player = Player.objects.get(id=player_id)
-    template = loader.get_template('teams/players.html')
-    context = RequestContext(request, {
-        'player': player, 'team':team.team_name
-    })
-    return HttpResponse(template.render(context))
-# Create your views here.
+    if request.user.is_authenticated():
+        team = Team.objects.get(team_id=team_id)
+        player = Player.objects.get(id=player_id)
+        template = loader.get_template('teams/players.html')
+        context = RequestContext(request, {
+            'player': player, 'team':team.team_name
+        })
+        return HttpResponse(template.render(context))
+    else:
+        return HttpResponseRedirect('/login')
+def create_team(request):
+    if request.user.is_authenticated():
+        context = RequestContext(request)
+        team_created = False
+        if request.method == 'POST':
+            team_form = TeamForm(data=request.POST)
+            if team_form.is_valid():
+                team = team_form.save()
+                team.team_id = get_team_id()
+                team.save()
+                team_created = True
+                
+                player_team = Team.objects.get(team_id=team.team_id)
+                #player_username = str(request.user.username)
+                player_username = User.objects.get(username=request.user.username)
+                player_name = '%s %s' % (player_username.first_name, player_username.last_name)
+                new_player = Player.objects.create(username= player_username, team_id_id = player_team.id, player_name=player_name)
+                new_player.save()
+                #add func for saving logged in user to player list
+            else:
+                print team_form.errors
+        else:
+            team_form = TeamForm()
+            
+        return render_to_response(
+                'teams/create_team.html',
+                {'team_form': team_form, 'team_created': team_created},
+                context)
+    else:
+        return HttpResponseRedirect('/login')
+        
+def get_team_id():
+    team_id = str(uuid.uuid4())
+    try:
+        id_exists = Team.objects.get(team_id=team_id)
+        get_team_id()
+    except:
+        return team_id
+        
+def access_allowed(request, team_id):
+    player_username = User.objects.get(username=request.user.username)
+    player_team = Team.objects.get(team_id=team_id)
+    try:
+        valid_player = Player.objects.get(username=player_username, team_id=player_team)
+        return True
+    except:
+        return False
+    

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href="/teams/create">Create New Team</a>
+{% if team_list %}
+<table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Team Name</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for team in team_list %}
+        <tr>
+          <td><a href="/teams/{{ team.team_id }}">{{ team.team_name }}</a></td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+{% else %}
+    <p>No Teams are available.</p>
+{% endif %}
+{% endblock %}

@@ -2,7 +2,7 @@ from .forms import UserForm
 from django.template import RequestContext
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 def register(request):
     context = RequestContext(request)
@@ -16,6 +16,8 @@ def register(request):
         user_form = UserForm(data=request.POST)
         if user_form.is_valid():
             user = user_form.save()
+            user.first_name = request.POST['first_name']
+            user.last_name = request.POST['last_name']
             user.set_password(user.password)
             user.save()
 
@@ -43,7 +45,6 @@ def user_login(request):
         # This information is obtained from the login form.
         username = request.POST['username']
         password = request.POST['password']
-
         # Use Django's machinery to attempt to see if the username/password
         # combination is valid - a User object is returned if it is.
         user = authenticate(username=username, password=password)
@@ -57,7 +58,7 @@ def user_login(request):
                 # If the account is valid and active, we can log the user in.
                 # We'll send the user back to the homepage.
                 login(request, user)
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect('/teams')
             else:
                 # An inactive account was used - no logging in!
                 return HttpResponse("Your TeamBeam account is disabled.")
@@ -72,7 +73,11 @@ def user_login(request):
         # No context variables to pass to the template system, hence the
         # blank dictionary object...
         return render_to_response('login.html', {}, context)
-    
+        
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect('/')
+
 def home(request):
     context = {}
     template = "home.html"

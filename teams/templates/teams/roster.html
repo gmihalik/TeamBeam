@@ -2,12 +2,27 @@
 
 {% block content %}
 {% if team_list %}
-    <ul>
+<table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Position</th>
+        </tr>
+      </thead>
+      <tbody>
     {% for player in team_list %}
-        <li><a href="/teams/{{ player.team_id_id }}/roster/player/{{ player.id }}/">{{ player.player_name }}</a></li>
+        <tr>
+          <td>{{ player.player_number }}</td>
+          <td><a href="/teams/{{ player.team_id }}/roster/player/{{ player.id }}/">{{ player.player_name }}</a></td>
+          <td>{{ player.email }}</td>
+          <td>{{ player.player_position }}</td>
+        </tr>
     {% endfor %}
-    </ul>
+      </tbody>
+    </table>
 {% else %}
-    <p>No Teams are available.</p>
+    <p>No Players are available.</p>
 {% endif %}
 {% endblock %}

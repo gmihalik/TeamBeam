@@ -1,22 +1,69 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>TeamBeam</title>
-    </head>
+{% extends "base.html" %}
 
-        <h1>Login to TeamBeam</h1>
-    {% if error %}
-        {{ error }}
-    {% endif %}
-        <form id="login_form" method="post" action="/login/">
-            {% csrf_token %}
-            Username: <input type="text" name="username" value="" size="50" />
-            <br />
-            Password: <input type="password" name="password" value="" size="50" />
-            <br />
+{% block content %}
+<style>
+body {
+padding-top: 40px;
+padding-bottom: 40px;
+background-color: #eee;
+}
 
-            <input type="submit" value="submit" />
-        </form>
+.form-signin {
+max-width: 430px;
+padding: 15px;
+margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+margin-bottom: 10px;
+}
+.form-signin .checkbox {
+font-weight: normal;
+}
+.form-signin .form-control {
+position: relative;
+height: auto;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+padding: 10px;
+font-size: 16px;
+}
+.form-signin .form-control:focus {
+z-index: 2;
+}
+.form-signin input[type="email"] {
+margin-bottom: -1px;
+border-bottom-right-radius: 0;
+border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+margin-bottom: 10px;
+border-top-left-radius: 0;
+border-top-right-radius: 0;
+}
+#signup{
+float:right;
+}
+</style>
+    
+    <form class="form-signin" id="login_form" method="post" action="/login/">
+        {% csrf_token %}
+        <h3 class="form-signin-heading">Please sign in to TeamBeam</h3>
+        {% if error %}
+            {{ error }}
+        {% endif %}
+        <label for="username" class="sr-only">Email address</label>
+        <input type="text" id="username" class="form-control" placeholder="Username" name="username" value="" size="50" required autofocus>
+        <label for="password" class="sr-only">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="Password" name="password" value="" size="50"  required>
+        <div class="checkbox">
+        <label>
+        <input type="checkbox" value="remember-me"> Remember me
+        </label>
+        <a id="signup" href="/register">Not a memeber? - Sign Up</a>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" value="submit">Sign in</button>
+    </form>
 
-    </body>
-</html>
+{% endblock %}
