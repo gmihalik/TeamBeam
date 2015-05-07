@@ -60,7 +60,7 @@ def user_login(request):
                 login(request, user)
                 return HttpResponseRedirect('/teams')
             else:
-                # An inactive account was used - no logging in!
+                # An inactive account was used - no logging in!S
                 return HttpResponse("Your TeamBeam account is disabled.")
         else:
             # Bad login details were provided. So we can't log the user in.

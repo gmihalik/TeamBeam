@@ -1,7 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<a href="/teams/create">Create New Team</a>
+<!-- Button trigger modal -->
+<style>
+#dash{
+max-width: 960px;
+padding: 15px;
+margin: 0 auto;
+}
+</style>
+<div id="dash">
+<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#create_team">
+  Create Team
+</button>
+<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#join_team">
+  Join Team
+</button>
+
 {% if team_list %}
 <table class="table table-striped">
       <thead>
@@ -20,4 +35,116 @@
 {% else %}
     <p>No Teams are available.</p>
 {% endif %}
+
+<hr/>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Upcoming Events</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<hr/>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Recent Activity</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+</div>
+<!-- Modal -->
+<div class="modal fade" id="create_team" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Create a new team</h4>
+      </div>
+      <div class="modal-body">
+                <form class="form-register" id="team_form" method="post" action="/teams/create/"
+                enctype="multipart/form-data">
+                
+                {% csrf_token %}
+                <!-- Display each form. The as_p method wraps each element in a paragraph
+                (<p>) element. This ensures each element appears on a new line,
+                making everything look neater. 
+                {{ user_form.as_p }}-->
+
+                {% if error %}
+                        {{ error }}
+                {% endif %}
+                <label for="id_team" class="sr-only">Team Name</label>
+                <input type="text" id="id_team" class="form-control" placeholder="Team Name" name="team_name" value="" size="30" required autofocus>
+                <label for="id_league_name" class="sr-only">League Name</label>
+                <input type="text" id="id_league_name" class="form-control" placeholder="League Name" name="league_name" value="" size="75" required>
+                <label for="id_season" class="sr-only">Season</label>
+                <input type="text" id="id_season" class="form-control" placeholder="ex. 2015 Summer" name="season" value="" size="75"  required>
+                <label for="id_division" class="sr-only">Season</label>
+                <input type="text" id="id_division" class="form-control" placeholder="ex. Div C" name="division" value="" size="75"  required>
+                <!-- Provide a button to click to submit the form. -->
+                <!--<button class="btn btn-lg btn-primary btn-block" type="submit" value="submit" name="submit">Register</button>
+                </form>-->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button class="btn btn-primary" type="submit" value="submit" name="submit">Create Team</button>
+                </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="join_team" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Join a new team</h4>
+      </div>
+      <div class="modal-body">
+                <form class="form-register" id="join_team" method="post" action="/teams/join/"
+                enctype="multipart/form-data">
+                
+                {% csrf_token %}
+                <!-- Display each form. The as_p method wraps each element in a paragraph
+                (<p>) element. This ensures each element appears on a new line,
+                making everything look neater. 
+                {{ user_form.as_p }}-->
+
+                {% if error %}
+                        {{ error }}
+                {% endif %}
+                <label for="id_team_id" class="sr-only">Team_id</label>
+                <input type="text" id="id_team_id" class="form-control" placeholder="Enter Team Id Code" name="team_id" value="" size="75" required autofocus>
+                <label for="id_player_name" class="sr-only">Player Name</label>
+                <input type="text" id="id_player_name" class="form-control" placeholder="Player Name" name="player_name" value="{{ user.first_name }} {{ user.last_name }}" size="75" required>
+                <label for="id_player_number" class="sr-only">Number</label>
+                <input type="number" id="id_player_number" class="form-control" placeholder="ex. 22" name="player_number" value="" size="75"  required>
+                <label for="id_player_position" class="sr-only">Position</label>
+                <input type="text" id="id_player_position" class="form-control" placeholder="ex. D, F" name="player_position" value="" size="75"  required>
+                <input type="text" id="id_username" class="form-control" placeholder="" name="username" value={{ user.username }} size="75"  required>
+                <!-- Provide a button to click to submit the form. -->
+                <!--<button class="btn btn-lg btn-primary btn-block" type="submit" value="submit" name="submit">Register</button>
+                </form>-->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button class="btn btn-primary" type="submit" value="submit" name="submit">Join Team</button>
+                </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

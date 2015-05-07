@@ -13,7 +13,7 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <!-- Custom styles for this template -->
-    <link rel="stylesheet" type="text/css" href="../user_base.css" />
+    <link rel="stylesheet" type="text/css" href="./user_base.css" />
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
     
@@ -162,7 +162,27 @@ body {
 
     <div class="container-fluid">
       <div class="row">
-        <div class="col-sm-9 col-md-10 main">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="{{active.overview}}"><a href="/teams/{{ team_id }}/">Overview <span class="sr-only">(current)</span></a></li>
+            <li class="{{active.roster}}"><a href="/teams/{{ team_id }}/roster">Roster</a></li>
+            <li><a href="#">Schedule</a></li>
+            <li><a href="#">Availability</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">Statistics</a></li>
+            <li><a href="">{{ active.roster }}</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+            <li><a href="">More navigation</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item again</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           {% block content %}
         
           {% endblock %}

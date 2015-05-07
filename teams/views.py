@@ -1,4 +1,4 @@
-from .forms import TeamForm
+from .forms import TeamForm, PlayerForm
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
@@ -12,25 +12,27 @@ def index(request):
         #use the team ids to make a list of all teams for the user
         player_username = User.objects.get(username=request.user.username)
         team_list = Team.objects.all().filter(player__username=player_username)
-        template = loader.get_template('teams/dashboard.html')
-        context = RequestContext(request, {
-        'team_list': team_list,
-        })
-        return HttpResponse(template.render(context))
+        context = {'team_list': team_list}
+        template = "teams/dashboard.html"
+        return render(request, template, context)
     else:
         return HttpResponseRedirect('/login')
 
 def detail(request, team_id):
     if request.user.is_authenticated():
         if access_allowed(request, team_id):
-            for e in Team.objects.all():
-                print e.team_id
+            active = {'overview':'active'}
             team = Team.objects.get(team_id=team_id)
-            return HttpResponse("youre looking at team %s" % team.team_name)
+            #return HttpResponse("youre looking at team %s" % team.team_name)
+            #template = loader.get_template('teams/team_home.html')
+            context = {'team':team, 'team_id': team_id, 'active':active}
+            template = "teams/team_home.html"
+            return render(request, template, context)
         else:
             return HttpResponseRedirect('/teams')    
     else:
         return HttpResponseRedirect('/login')
+        
 def roster(request, team_id):
     '''
     output = ', '.join([p.player_name for p in team_list])
@@ -43,13 +45,12 @@ def roster(request, team_id):
     '''
     if request.user.is_authenticated():
         if access_allowed(request, team_id):
+            active = {'roster':'active'}
             player_team = Team.objects.get(team_id=team_id)
             team_list = Player.objects.all().filter(team_id=player_team)
-            template = loader.get_template('teams/roster.html')
-            context = RequestContext(request, {
-                'team_list': team_list,
-            })
-            return HttpResponse(template.render(context))
+            context = {'team_list': team_list, 'team_id': team_id, 'active':active}
+            template = "teams/roster.html"
+            return render(request, template, context)
         else:
             return HttpResponseRedirect('/teams')    
     else:
@@ -86,13 +87,33 @@ def create_team(request):
                 #add func for saving logged in user to player list
             else:
                 print team_form.errors
-        else:
-            team_form = TeamForm()
-            
-        return render_to_response(
-                'teams/create_team.html',
+                return render_to_response(
+                'dashboard.html',
                 {'team_form': team_form, 'team_created': team_created},
                 context)
+            return HttpResponseRedirect('/teams/')
+        else:
+         #   team_form = TeamForm()
+            return HttpResponseRedirect('/teams/')
+        #return render_to_response(
+        #        'teams/create_team.html',
+        #        {'team_form': team_form, 'team_created': team_created},
+        #        context)
+    else:
+        return HttpResponseRedirect('/login')
+
+def join_team(request):
+    if request.user.is_authenticated():
+        joined_team = False
+        if request.method == 'POST':
+            #add field validation and attemp to fix this to work with FORMS.py
+            player_team = Team.objects.get(team_id=request.POST["team_id"])
+            player_username = User.objects.get(username=request.POST["username"])
+            new_player = Player(username=player_username, team_id=player_team, player_name = request.POST["player_name"], player_number=request.POST["player_number"], player_position=request.POST["player_position"])
+            new_player.save()
+            return HttpResponseRedirect('/teams/')
+        else:
+            return HttpResponseRedirect('/teams/')
     else:
         return HttpResponseRedirect('/login')
         
@@ -112,4 +133,3 @@ def access_allowed(request, team_id):
         return True
     except:
         return False
-    
