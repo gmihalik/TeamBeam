@@ -5,6 +5,7 @@ from django.template import RequestContext, loader
 from .models import Player, Team
 from django.contrib.auth.models import User
 import uuid
+from django.db.models import F
 
 def index(request):
     if request.user.is_authenticated():
@@ -47,8 +48,24 @@ def roster(request, team_id):
         if access_allowed(request, team_id):
             active = {'roster':'active'}
             player_team = Team.objects.get(team_id=team_id)
-            team_list = Player.objects.all().filter(team_id=player_team)
-            context = {'team_list': team_list, 'team_id': team_id, 'active':active}
+            #team_list = Player.objects.all().filter(team_id=player_team)
+            #email_list = Player.objects.filter(team_id=player_team, username__username='').select_related()
+            #email_list = User.objects.all().filter(player__team_id=player_team).select_related()
+            #team_list = Player.objects.filter(team_id=player_team)
+            #email_list = Player.objects.filter(team_id=player_team)
+            #email_list = User.objects.select_related('username')
+            #Entry.objects.filter(authors__name=F('blog__name'))
+            #Entry.objects.filter(authors__name=F('player__username'))
+            #email_list = User.objects.filter(player__username__in=team_list)
+            team = Team.objects.get(team_id=team_id)
+            players = set()
+            
+            for e in Player.objects.filter(team_id=player_team).all().select_related():
+            # Without select_related(), this would make a database query for each
+            # loop iteration in order to fetch the related blog for each entry.
+                players.add(e)
+            
+            context = {'team_list': players, 'team_id': team_id, 'team': team, 'active':active}
             template = "teams/roster.html"
             return render(request, template, context)
         else:

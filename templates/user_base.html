@@ -146,7 +146,7 @@ body {
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             {% if user.is_authenticated %}
-            <li><a href="/teams">Dashboard</a></li>
+            <li><a href="/teams">{{user.username}} - Dashboard</a></li>
             <li><a href="/logout">Logout</a></li>
             {% else %}
             <li><a href="/login">Login</a></li>
@@ -164,22 +164,12 @@ body {
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
+            <li><a href="/teams/">Dashboard</a></li>
+            <li style="border-bottom:solid black 2px; padding-left:15px"><h3>{{ team.team_name }}</h3></li>
             <li class="{{active.overview}}"><a href="/teams/{{ team_id }}/">Overview <span class="sr-only">(current)</span></a></li>
             <li class="{{active.roster}}"><a href="/teams/{{ team_id }}/roster">Roster</a></li>
             <li><a href="#">Schedule</a></li>
             <li><a href="#">Availability</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="">Statistics</a></li>
-            <li><a href="">{{ active.roster }}</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
-            <li><a href="">More navigation</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">

@@ -26,7 +26,7 @@ class Player(models.Model):
     updated = models.DateTimeField(auto_now_add = False, auto_now = True)
     team_id = models.ForeignKey(Team)
     username = models.ForeignKey(User)
-    
+
     def __str__(self):
         return self.player_name
     

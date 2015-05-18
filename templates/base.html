@@ -12,6 +12,7 @@
     <title>TeamBeam Team Management</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <!-- Custom styles for this template -->
     <link rel="stylesheet" type="text/css" href="../user_base.css" />
     <!-- Optional theme -->
@@ -146,7 +147,7 @@ body {
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             {% if user.is_authenticated %}
-            <li><a href="/teams">Dashboard</a></li>
+            <li><a href="/teams">{{user.username}} - Dashboard</a></li>
             <li><a href="/logout">Logout</a></li>
             {% else %}
             <li><a href="/login">Login</a></li>
