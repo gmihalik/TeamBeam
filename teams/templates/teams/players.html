@@ -1,11 +1,16 @@
-{% extends "base.html" %}
+{% extends "user_base.html" %}
+{% load staticfiles %}
 
 {% block content %}
+<div class="container">
+<link rel="stylesheet" href="{% static "teambeam/css/players.css" %}">
 
-<h1>{{ team }} - #{{ player.player_number }}</h1>
+<p><a href="/teams/{{ team_id }}/roster"><i class="fa fa-arrow-left"></i> back to {{ team.team_name }} roster</a> </p>
+
+<h1>{{ team.team_name }} - #{{ player.player_number }}</h1>
 
 <h3>{{ player.player_name }}</h3>
 <h4><strong>Position: </strong>{{ player.player_position }}</h4>
 <h5><strong>Contact: </strong>{{ player.email }}</h5>
-
+</div>
 {% endblock %}

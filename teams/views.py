@@ -3,6 +3,7 @@ from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
 from .models import Player, Team
+from leagues.models import Event
 from django.contrib.auth.models import User
 import uuid
 from django.db.models import F
@@ -24,9 +25,11 @@ def detail(request, team_id):
         if access_allowed(request, team_id):
             active = {'overview':'active'}
             team = Team.objects.get(team_id=team_id)
+            print team_id
+            event_list = Event.objects.all().filter(team_id=team)
             #return HttpResponse("youre looking at team %s" % team.team_name)
             #template = loader.get_template('teams/team_home.html')
-            context = {'team':team, 'team_id': team_id, 'active':active}
+            context = {'team':team, 'team_id': team_id, 'active':active, 'event_list':event_list}
             template = "teams/team_home.html"
             return render(request, template, context)
         else:
@@ -73,12 +76,13 @@ def roster(request, team_id):
     else:
         return HttpResponseRedirect('/login')
 def player(request, team_id, player_id):
+    active = {'roster':'active'}
     if request.user.is_authenticated():
         team = Team.objects.get(team_id=team_id)
         player = Player.objects.get(id=player_id)
         template = loader.get_template('teams/players.html')
         context = RequestContext(request, {
-            'player': player, 'team':team.team_name
+            'player': player, 'team':team, 'team_id':team.team_id,'active':active
         })
         return HttpResponse(template.render(context))
     else:

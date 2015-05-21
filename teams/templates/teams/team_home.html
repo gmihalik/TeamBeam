@@ -17,6 +17,19 @@ margin: 0 auto;
     </tr>
   </thead>
   <tbody>
+    {% if event_list %}
+      {% for event in event_list %}
+          <tr>
+            <td>{{ event.event_name }}</td>
+            <td>{{ event.event_date }}</td>
+            <td>{{ event.event_location }}</td>
+          </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td>No upcoming events available</td>
+      </tr>
+    {% endif %}
   </tbody>
 </table>
 
