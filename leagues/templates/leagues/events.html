@@ -1,0 +1,115 @@
+{% extends "user_base.html" %}
+
+{% block content %}
+<style>
+  .input-group-addon {
+    border-left: 1px solid #ccc;
+  }
+</style>
+<button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#Add_Events">
+  Add Events
+</button>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Upcoming Events</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if event_list %}
+      {% for event in event_list %}
+          <tr>
+            <td>{{ event.event_date }}</td>
+            <td><a href="#">{{ event.event_name }}</a></td>
+            <td>{{ event.event_location }}</td>
+          </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td>No upcoming events available</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+<!-- Modal -->
+<div class="modal fade" id="Add_Events" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" id="myModalLabel">Add a New Event for the {{ team.team_name }}</h3>
+      </div>
+      <div class="modal-body">
+        <form class="form-new-event form-horizontal" id="new-event" method="post" action="/schedule/"
+        enctype="multipart/form-data">
+        
+          {% csrf_token %}
+        <!-- Display each form. The as_p method wraps each element in a paragraph
+        (<p>) element. This ensures each element appears on a new line,
+        making everything look neater. 
+        {{ user_form.as_p }}-->
+        
+          {% if error %}
+                  {{ error }}
+          {% endif %}
+          <div class="input-group">
+            <label class="sr-only" id="id_event_name">Event Name</label>
+            <div class="col-sm-3" style="padding:0px">
+              <div class="input-group-addon" style="padding:6px 12px; height:34px">Event Name</div>
+            </div>
+            <div class="col-sm-9" style="padding:0px">
+              <input type="text" id="id_event_name" class="form-control" placeholder="Event Name" name="event_name" value="" size="30" required autofocus>
+            </div>
+          </div> <br>
+          
+          <div class="input-group">
+            <label class="sr-only" id="id_event_date">Event Date</label>
+            <div class="col-sm-3" style="padding:0px">
+              <div class="input-group-addon" style="padding:6px 12px; height:34px">Event Date</div>
+            </div>
+            <div class="col-sm-9" style="padding:0px">
+              <input type="date" id="id_event_date" class="form-control col-sm-8" placeholder="Event Date" name="event_date" value="" required>
+              </div>
+          </div> <br>
+          
+          <div class="input-group">
+            <label class="sr-only" id="id_event_location">Event Location</label>
+            <div class="col-sm-3" style="padding:0px">
+              <div class="input-group-addon" style="padding:6px 12px; height:34px">Event Location</div>
+            </div>
+            <div class="col-sm-9" style="padding:0px">
+              <input type="text" id="id_event_location" class="form-control col-sm-8" placeholder="Event Location" name="event_location" value="" size="75" required>
+            </div>
+          </div> <br>
+          
+          <div class="input-group">
+            <label class="sr-only" id="id_event_time">Event Time</label>
+            <div class="col-sm-3" style="padding:0px">
+              <div class="input-group-addon" style="padding:6px 12px; height:34px">Event Time</div>
+            </div>
+            <div class="col-sm-9" style="padding:0px">
+              <input type="time" id="id_event_time" class="form-control col-sm-8" placeholder="Event Time" name="event_time" value="" required>
+            </div>
+          </div> <br>
+          
+          <div class="input-group">
+            <label class="sr-only" id="id_event_is_game">Game?</label>
+            <div class="col-sm-3" style="padding:0px">
+              <div class="input-group-addon" style="padding:6px 12px; height:34px">Game?</div>
+            </div>
+            <div class="col-sm-1" style="padding:0px; width: 35px;">
+              <input style= "margin:0px" type="checkbox" id="id_event_is_game" class="form-control" placeholder="Is Game?" name="event_is_game" value="" required>
+            </div>
+          </div> <br>
+          <!-- Provide a button to click to submit the form. -->
+          <button class="btn btn-lg btn-primary btn-block" type="submit" value="Register" name="submit">Create New Event</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

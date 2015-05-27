@@ -1,5 +1,5 @@
 from django.db import models
-from teams.models import Team
+from teams.models import Team, Player
 from django.contrib.auth.models import User
 
 class League(models.Model):
@@ -29,3 +29,10 @@ class Event(models.Model):
     
     def __unicode__(self):
         return self.event_name
+        
+class Availability(models.Model):
+    event_id = models.ForeignKey(Event)
+    player_id = models.ForeignKey(Player)
+    availability = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add = True, auto_now = False)
+    updated = models.DateTimeField(auto_now_add = False, auto_now = True)

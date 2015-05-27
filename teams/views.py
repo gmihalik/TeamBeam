@@ -6,7 +6,8 @@ from .models import Player, Team
 from leagues.models import Event
 from django.contrib.auth.models import User
 import uuid
-from django.db.models import F
+from django.db.models import F, Q
+import datetime
 
 def index(request):
     if request.user.is_authenticated():
@@ -26,7 +27,8 @@ def detail(request, team_id):
             active = {'overview':'active'}
             team = Team.objects.get(team_id=team_id)
             print team_id
-            event_list = Event.objects.all().filter(team_id=team)
+            today = datetime.datetime.today()
+            event_list = Event.objects.all().filter(team_id=team).filter(Q(event_date__gte=today))
             #return HttpResponse("youre looking at team %s" % team.team_name)
             #template = loader.get_template('teams/team_home.html')
             context = {'team':team, 'team_id': team_id, 'active':active, 'event_list':event_list}
@@ -137,7 +139,19 @@ def join_team(request):
             return HttpResponseRedirect('/teams/')
     else:
         return HttpResponseRedirect('/login')
-        
+
+def events(request, team_id):
+    active = {'schedule':'active'}
+    team = Team.objects.get(team_id=team_id)
+    today = datetime.datetime.today()
+    event_list = Event.objects.all().filter(team_id=team).filter(Q(event_date__gte=today))
+    
+    #return HttpResponse("youre looking at team %s" % team.team_name)
+    #template = loader.get_template('teams/team_home.html')
+    context = {'team':team, 'team_id': team_id, 'active':active, 'event_list':event_list}
+    template = "leagues/events.html"
+    return render(request, template, context)
+
 def get_team_id():
     team_id = str(uuid.uuid4())
     try:
