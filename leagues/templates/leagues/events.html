@@ -7,7 +7,7 @@
   }
 </style>
 <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#Add_Events">
-  Add Events
+  <i class="fa fa-calendar"></i><i class="fa fa-plus-circle"></i> Add Events
 </button>
 
 <table class="table table-striped">
@@ -41,7 +41,7 @@
         <h3 class="modal-title" id="myModalLabel">Add a New Event for the {{ team.team_name }}</h3>
       </div>
       <div class="modal-body">
-        <form class="form-new-event form-horizontal" id="new-event" method="post" action="/schedule/"
+        <form class="form-new-event form-horizontal" id="new-event" method="post" action="./new_event/"
         enctype="multipart/form-data">
         
           {% csrf_token %}
@@ -99,7 +99,7 @@
               <div class="input-group-addon" style="padding:6px 12px; height:34px">Game?</div>
             </div>
             <div class="col-sm-1" style="padding:0px; width: 35px;">
-              <input style= "margin:0px" type="checkbox" id="id_event_is_game" class="form-control" placeholder="Is Game?" name="event_is_game" value="" required>
+              <input style= "margin:0px" type="checkbox" id="id_event_is_game" class="form-control" placeholder="Is Game?" name="event_is_game">
             </div>
           </div> <br>
           <!-- Provide a button to click to submit the form. -->

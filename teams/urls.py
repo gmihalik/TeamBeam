@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^(?P<team_id>[a-zA-Z0-9-_]+)/roster/$', views.roster, name='roster'),
     url(r'^(?P<team_id>[a-zA-Z0-9-_]+)/roster/player/(?P<player_id>[0-9]+)/$', views.player, name='player'),
     url(r'^(?P<team_id>[a-zA-Z0-9-_]+)/schedule/$', views.events, name='events'),
+    url(r'^(?P<team_id>[a-zA-Z0-9-_]+)/schedule/new_event/$', views.create_event, name='create_event'),
 ]

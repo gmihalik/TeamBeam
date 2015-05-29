@@ -3,7 +3,7 @@ from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
 from .models import Player, Team
-from leagues.models import Event
+from leagues.models import Event, League
 from django.contrib.auth.models import User
 import uuid
 from django.db.models import F, Q
@@ -28,7 +28,7 @@ def detail(request, team_id):
             team = Team.objects.get(team_id=team_id)
             print team_id
             today = datetime.datetime.today()
-            event_list = Event.objects.all().filter(team_id=team).filter(Q(event_date__gte=today))
+            event_list = Event.objects.all().order_by('event_date').filter(team_id=team).filter(Q(event_date__gte=today))
             #return HttpResponse("youre looking at team %s" % team.team_name)
             #template = loader.get_template('teams/team_home.html')
             context = {'team':team, 'team_id': team_id, 'active':active, 'event_list':event_list}
@@ -144,13 +144,46 @@ def events(request, team_id):
     active = {'schedule':'active'}
     team = Team.objects.get(team_id=team_id)
     today = datetime.datetime.today()
-    event_list = Event.objects.all().filter(team_id=team).filter(Q(event_date__gte=today))
+    event_list = Event.objects.all().order_by('event_date').filter(team_id=team).filter(Q(event_date__gte=today))
     
     #return HttpResponse("youre looking at team %s" % team.team_name)
     #template = loader.get_template('teams/team_home.html')
     context = {'team':team, 'team_id': team_id, 'active':active, 'event_list':event_list}
     template = "leagues/events.html"
     return render(request, template, context)
+
+def create_event(request, team_id):
+    if request.user.is_authenticated():
+        context = RequestContext(request)
+        new_event_created = False
+        if request.method == 'POST':
+            event_name = request.POST['event_name']
+            event_date = request.POST['event_date']
+            event_location = request.POST['event_location']
+            event_time = request.POST['event_time']
+            if request.POST.get('event_is_game'):
+                event_is_game = True
+            else:
+                event_is_game = False
+            #event_opponent = request.POST['event_opponent']
+            team = Team.objects.get(team_id=team_id)
+            team_id = team
+            league = League.objects.all()#.filter(team_id=team).filter(current=True)
+            print league[0]
+            league_id = league[0]
+            print event_date
+            event_date = event_date + " " + event_time
+            event_time = event_date
+            print event_time
+            new_event = Event.objects.create(event_name= event_name, event_date = event_date,  \
+            event_location=event_location, event_time=event_time, event_is_game=event_is_game, \
+            league_id=league_id, team_id=team_id)
+            new_event.save()
+            new_event_created = True
+            return HttpResponseRedirect('/teams/%s/schedule'% team_id)
+        else:
+         #   team_form = TeamForm()
+            return HttpResponseRedirect('/teams/%s/schedule'% team_id)
 
 def get_team_id():
     team_id = str(uuid.uuid4())
