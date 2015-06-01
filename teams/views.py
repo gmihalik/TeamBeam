@@ -89,6 +89,15 @@ def player(request, team_id, player_id):
         return HttpResponse(template.render(context))
     else:
         return HttpResponseRedirect('/login')
+        
+def upload_image(request,team_id, player_id):
+    update_player = Player.objects.get(id=player_id)
+    if request.method == 'POST':
+        print request.FILES["upload_image"]
+        update_player.player_image = request.FILES["upload_image"]
+        update_player.save()
+    return HttpResponseRedirect('/teams/%s/roster/player/%s'% (team_id,player_id))
+    
 def create_team(request):
     if request.user.is_authenticated():
         context = RequestContext(request)
@@ -145,10 +154,10 @@ def events(request, team_id):
     team = Team.objects.get(team_id=team_id)
     today = datetime.datetime.today()
     event_list = Event.objects.all().order_by('event_date').filter(team_id=team).filter(Q(event_date__gte=today))
-    
+    recent_event_list = Event.objects.all().order_by('event_date').filter(team_id=team).filter(Q(event_date__lte=today))
     #return HttpResponse("youre looking at team %s" % team.team_name)
     #template = loader.get_template('teams/team_home.html')
-    context = {'team':team, 'team_id': team_id, 'active':active, 'event_list':event_list}
+    context = {'team':team, 'team_id': team_id, 'active':active, 'event_list':event_list, 'recent_event_list':recent_event_list}
     template = "leagues/events.html"
     return render(request, template, context)
 

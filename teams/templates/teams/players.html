@@ -6,11 +6,43 @@
 <link rel="stylesheet" href="{% static "teambeam/css/players.css" %}">
 
 <p><a href="/teams/{{ team_id }}/roster"><i class="fa fa-arrow-left"></i> back to {{ team.team_name }} roster</a> </p>
+<hr/>
+<div class="row">
+    <div class="col-sm-4">
+        {% if player.player_image != 'none' %}
+            <img src="/{{ player.player_image }}" style="height:320px;width:320px;">
+        {% else %}
+            <img src="{% static "teambeam/img/blank.jpg" %}">
+        {% endif %}
+        <form class="form-new-event form-inline" id="upload-image" method="post" action="./upload_image/"
+        enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="file" name="upload_image" accept="image/*">
+          <button class="btn btn-sm btn-primary" type="submit" value="Upload Image" name="submit">Upload New Image</button>
+        </form>
+    </div>
+    <div class="col-sm-6">
+        <h1>{{ team.team_name }} - #{{ player.player_number }}</h1>
+        <h3>{{ player.player_name }}</h3>
+        <h4><strong>Position: </strong>{{ player.player_position }}</h4>
+        <h5><strong>Contact: </strong>{{ player.email }}</h5>
+    </div>
+</div>
 
-<h1>{{ team.team_name }} - #{{ player.player_number }}</h1>
+<hr/>
 
-<h3>{{ player.player_name }}</h3>
-<h4><strong>Position: </strong>{{ player.player_position }}</h4>
-<h5><strong>Contact: </strong>{{ player.email }}</h5>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Availabilty</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td>No upcoming events available</td>
+      </tr>
+  </tbody>
+</table>
+
 </div>
 {% endblock %}
