@@ -1,0 +1,32 @@
+{% extends "user_base.html" %}
+
+{% block content %}
+{% if avail_list %}
+<table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Player Name</th>
+          {% for event in event_headers %}
+            <th>{{ event }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+    {% for player in players %}
+        <tr>
+          <td>{{ player.player_name }}</td>
+          {% for avail in avail_list %}
+            {% for key,value in avail.items %}
+                {% ifequal player.id|add:"0" key|add:"0" %}
+                <td><input type="checkbox" name="availability" value="{{player.id}}" disabled {% if value == True %} checked {% endif %}></td>
+                {% endifequal %}
+            {% endfor %}
+          {% endfor %}
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+{% else %}
+    <p>No Players are available.</p>
+{% endif %}
+{% endblock %}

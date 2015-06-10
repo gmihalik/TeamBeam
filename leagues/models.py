@@ -36,3 +36,9 @@ class Availability(models.Model):
     availability = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add = True, auto_now = False)
     updated = models.DateTimeField(auto_now_add = False, auto_now = True)
+    
+    def __unicode__(self):
+        return self.player_id
+        
+    def __str__(self):
+        return "%s" % self.event_id

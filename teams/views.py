@@ -3,7 +3,7 @@ from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, loader
 from .models import Player, Team
-from leagues.models import Event, League
+from leagues.models import Event, League, Availability
 from django.contrib.auth.models import User
 import uuid
 from django.db.models import F, Q
@@ -29,9 +29,8 @@ def detail(request, team_id):
             print team_id
             today = datetime.datetime.today()
             event_list = Event.objects.all().order_by('event_date').filter(team_id=team).filter(Q(event_date__gte=today))
-            #return HttpResponse("youre looking at team %s" % team.team_name)
-            #template = loader.get_template('teams/team_home.html')
-            context = {'team':team, 'team_id': team_id, 'active':active, 'event_list':event_list}
+            recent_event_list = Event.objects.all().order_by('event_date').filter(team_id=team).filter(Q(event_date__lte=today))
+            context = {'team':team, 'team_id': team_id, 'active':active, 'event_list':event_list, 'recent_event_list':recent_event_list}
             template = "teams/team_home.html"
             return render(request, template, context)
         else:
@@ -82,9 +81,12 @@ def player(request, team_id, player_id):
     if request.user.is_authenticated():
         team = Team.objects.get(team_id=team_id)
         player = Player.objects.get(id=player_id)
+        #availability = Availability.objects.all().values_list('event_id','player_id','availability').filter(player_id=player.id)
+        #availability = Availability.objects.filter(player_id=player).all().filter(event__team_id=team_id)
+        availability = Availability.objects.filter(player_id=player).all().filter(event_id__team_id = team) 
         template = loader.get_template('teams/players.html')
         context = RequestContext(request, {
-            'player': player, 'team':team, 'team_id':team.team_id,'active':active
+            'player': player, 'team':team, 'team_id':team.team_id,'active':active, 'availability':availability
         })
         return HttpResponse(template.render(context))
     else:
@@ -93,11 +95,62 @@ def player(request, team_id, player_id):
 def upload_image(request,team_id, player_id):
     update_player = Player.objects.get(id=player_id)
     if request.method == 'POST':
-        print request.FILES["upload_image"]
         update_player.player_image = request.FILES["upload_image"]
         update_player.save()
     return HttpResponseRedirect('/teams/%s/roster/player/%s'% (team_id,player_id))
     
+def delete_image(request,team_id, player_id):
+    update_player = Player.objects.get(id=player_id)
+    if request.method == 'POST':
+        update_player.player_image = 'none'
+        update_player.save()
+    return HttpResponseRedirect('/teams/%s/roster/player/%s'% (team_id,player_id))
+
+def availability(request,team_id):
+    active = {'availability':'active'}
+    if request.user.is_authenticated():
+        team = Team.objects.get(team_id=team_id)
+        #availability = Availability.objects.all().values_list('event_id','player_id','availability').filter(player_id=player.id)
+        #availability = Availability.objects.filter(player_id=player).all().filter(event__team_id=team_id)
+        players = set()
+        for e in Player.objects.filter(team_id=team).all().select_related():
+        # Without select_related(), this would make a database query for each
+        # loop iteration in order to fetch the related blog for each entry.
+            players.add(e)
+        today = datetime.datetime.today()
+        event_list = Event.objects.all().order_by('event_date').filter(team_id=team).filter(Q(event_date__gte=today))
+        print event_list
+        availability = Availability.objects.all().filter(event_id__team_id = team)
+        template = loader.get_template('teams/availability.html')
+        
+        event_headers = []
+        avail_list = []
+        for event in event_list:
+            event_headers.append(event.event_name)
+            event_avail = {}
+            for player in players:
+                val_set = False
+                for avail in availability:
+                    avail_event = "%s" % avail.event_id
+                    event_event = "%s" % event.event_name
+                    player_name = "%s" % player.id
+                    avail_name = "%s" % avail.player_id_id
+                    if player_name == avail_name:
+                        if avail_event == event_event:
+                            event_avail[player_name] = avail.availability
+                            val_set = True
+                if val_set == False:
+                    print "False"
+                    event_avail[player_name] = False
+            avail_list.append(event_avail)
+        print avail_list
+        context = RequestContext(request, {
+            'team':team, 'team_id':team.team_id,'active':active, 'players':players, 'avail_list':avail_list, 'event_headers':event_headers
+        })
+        return HttpResponse(template.render(context))
+    else:
+        return HttpResponseRedirect('/login')
+
 def create_team(request):
     if request.user.is_authenticated():
         context = RequestContext(request)

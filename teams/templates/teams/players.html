@@ -9,23 +9,29 @@
 <hr/>
 <div class="row">
     <div class="col-sm-4">
+      <span style="display:inline-block;width:100%;background-color:rgb(221, 221, 221);text-align:right">
+        <button type="button" class="btn" data-toggle="modal" data-target="#image_uploader">
+          <i class="fa fa-upload"></i>
+        </button>
+        <form method="post" action="./delete_image/" enctype="multipart/form-data" style="display:inline-block;">
+          {% csrf_token %}
+          <button type="submit" class="btn" data-toggle="modal" data-target="#Add_Players">
+            <i class="fa fa-remove"></i>
+          </button>
+        </form>
+      </span>
         {% if player.player_image != 'none' %}
             <img src="/{{ player.player_image }}" style="height:320px;width:320px;">
         {% else %}
             <img src="{% static "teambeam/img/blank.jpg" %}">
         {% endif %}
-        <form class="form-new-event form-inline" id="upload-image" method="post" action="./upload_image/"
-        enctype="multipart/form-data">
-          {% csrf_token %}
-          <input type="file" name="upload_image" accept="image/*">
-          <button class="btn btn-sm btn-primary" type="submit" value="Upload Image" name="submit">Upload New Image</button>
-        </form>
+        
     </div>
     <div class="col-sm-6">
         <h1>{{ team.team_name }} - #{{ player.player_number }}</h1>
         <h3>{{ player.player_name }}</h3>
         <h4><strong>Position: </strong>{{ player.player_position }}</h4>
-        <h5><strong>Contact: </strong>{{ player.email }}</h5>
+        <h5><strong>Contact: </strong>{{ player.username.email }}</h5>
     </div>
 </div>
 
@@ -34,15 +40,53 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>Availabilty</th>
+      <th>Event</th>
+      <th>Availability</th>
     </tr>
   </thead>
   <tbody>
+      {% if availability %}
+        {% for event in availability %}
+          <tr>
+            <td>{{ event.event_id }}</td>
+            {% if event.availability == True %}
+              <td><input type="checkbox" name="Availability" value="Availability" checked disabled></td>
+            {% else %}
+              <td><input type="checkbox" name="Availability" value="Availability" disabled></td>
+            {% endif %}
+            <td>{{ event.event_date }}</td>
+          </tr>
+        {% endfor %}
+      {% else %}
       <tr>
         <td>No upcoming events available</td>
       </tr>
+      {% endif %}
   </tbody>
 </table>
+</div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="image_uploader" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" id="myModalLabel">Upload a new profile image</h3>
+      </div>
+      <div class="modal-body">
+        <form class="form-new-event form-inline" id="upload-image" method="post" action="./upload_image/"
+        enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="file" name="upload_image" accept="image/*">
+          <button class="btn btn-sm btn-primary" type="submit" value="Upload Image" name="submit">Upload New Image</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
