@@ -15,7 +15,23 @@ def index(request):
         #use the team ids to make a list of all teams for the user
         player_username = User.objects.get(username=request.user.username)
         team_list = Team.objects.all().filter(player__username=player_username)
-        context = {'team_list': team_list}
+        today = datetime.datetime.today()
+        #event_list = Event.objects.all().order_by('event_date').filter(team_id=team).filter(Q(event_date__gte=today))
+        event_list = Event.objects.all().order_by('event_date').filter(team_id=team_list).filter(Q(event_date__gte=today))
+        
+        for event in event_list:
+            team = Team.objects.get(team_id=event.team_id)
+            event.team = team.team_name
+            print event.team
+            
+        recent_event_list = Event.objects.all().order_by('-event_date').filter(team_id=team_list).filter(Q(event_date__lte=today))
+        
+        for event in recent_event_list:
+            team = Team.objects.get(team_id=event.team_id)
+            event.team = team.team_name
+            print event.team
+        
+        context = {'team_list': team_list, 'event_list':event_list, 'recent_event_list':recent_event_list}
         template = "teams/dashboard.html"
         return render(request, template, context)
     else:
@@ -83,7 +99,20 @@ def player(request, team_id, player_id):
         player = Player.objects.get(id=player_id)
         #availability = Availability.objects.all().values_list('event_id','player_id','availability').filter(player_id=player.id)
         #availability = Availability.objects.filter(player_id=player).all().filter(event__team_id=team_id)
-        availability = Availability.objects.filter(player_id=player).all().filter(event_id__team_id = team) 
+        availability = Availability.objects.filter(player_id=player).all().filter(event_id__team_id = team)
+        for item in availability:
+            print item
+        if not availability:
+            today = datetime.datetime.today()
+            events = Event.objects.all().order_by('event_date').filter(team_id=team).filter(Q(event_date__gte=today))
+            
+            availability = set()
+            
+            for e in events:
+            # Without select_related(), this would make a database query for each
+            # loop iteration in order to fetch the related blog for each entry.
+                e.event_id = e.event_name
+                availability.add(e)
         template = loader.get_template('teams/players.html')
         context = RequestContext(request, {
             'player': player, 'team':team, 'team_id':team.team_id,'active':active, 'availability':availability

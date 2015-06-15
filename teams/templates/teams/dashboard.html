@@ -39,27 +39,51 @@ margin-top:50px;
 
 <hr/>
 
+
+
+{% if event_list %}
 <table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Upcoming Events</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
+      <thead>
+        <tr>
+          <th>Upcoming Events</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for event in event_list %}
+        <tr>
+          <td>{{ event.event_name }}</td>
+          <td>{{ event.team }}</td>
+          <td>{{ event.event_date}} </td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+{% else %}
+    <p>No Upcoming Events.</p>
+{% endif %}
 
 <hr/>
 
+{% if recent_event_list %}
 <table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Recent Events</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
+      <thead>
+        <tr>
+          <th>Recent Events</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for event in recent_event_list %}
+        <tr>
+          <td>{{ event.event_name }}</td>
+          <td>{{ event.team }}</td>
+          <td>{{ event.event_date}} </td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+{% else %}
+    <p>No Recent Events.</p>
+{% endif %}
 
 </div>
 <!-- Modal -->
